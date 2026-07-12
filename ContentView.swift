@@ -8,14 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var expenses: [Expense] = SampleData.expenses
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List(expenses) { expense in
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text(expense.merchantName)
+                            .font(.headline)
+                        Text(expense.category.rawValue)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Text(expense.amount, format: .currency(code: "USD"))
+                        .font(.headline)
+                }
+            }
+            .navigationTitle("SnapLedger")
         }
-        .padding()
     }
 }
 
