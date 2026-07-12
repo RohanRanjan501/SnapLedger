@@ -9,6 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var expenses: [Expense] = SampleData.expenses
+    @State private var showScanner = false
+    @State private var scannedText = ""
+    @State private var showRawText = false
 
     var body: some View {
         NavigationStack {
@@ -27,6 +30,30 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("SnapLedger")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showScanner = true
+                    } label: {
+                        Image(systemName: "camera.fill")
+                    }
+                }
+            }
+            .sheet(isPresented: $showScanner) {
+                ReceiptScannerView { image in
+                    ReceiptOCRService.recognizeText(from: image) { text in
+                        DispatchQueue.main.async {
+                            scannedText = text
+                            showRawText = true
+                        }
+                    }
+                }
+            }
+            .alert("Scanned Text", isPresented: $showRawText) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(scannedText)
+            }
         }
     }
 }
